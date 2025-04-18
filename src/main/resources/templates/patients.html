@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Liste des patients</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
+</head>
+<body>
+<h1>Liste des patients</h1>
+
+<form method="get" th:action="@{/index}">
+    <input type="text" name="keyword" th:value="${keyword}" placeholder="Chercher par nom...">
+    <button type="submit">Chercher</button>
+</form>
+
+<table border="1">
+    <tr>
+        <th>ID</th><th>Nom</th><th>Date de Naissance</th><th>Malade</th><th>Score</th><th>Actions</th>
+    </tr>
+    <tr th:each="p : ${listPatients}">
+        <td th:text="${p.id}"></td>
+        <td th:text="${p.nom}"></td>
+        <td th:text="${#dates.format(p.dateNaissance, 'dd/MM/yyyy')}"></td>
+        <td th:text="${p.malade}"></td>
+        <td th:text="${p.score}"></td>
+        <td>
+            <a th:href="@{/delete(id=${p.id}, page=${currentPage}, keyword=${keyword})}"
+               onclick="return confirm('Confirmer la suppression ?')">Supprimer</a>
+        </td>
+    </tr>
+</table>
+
+<div>
+    <span th:each="i, stat : ${#arrays.array(0, pages.length-1)}">
+        <a th:href="@{/index(page=${stat.index}, keyword=${keyword})}"
+           th:text="${stat.index}"
+           th:class="${stat.index == currentPage} ? 'selected' : ''"></a>
+    </span>
+</div>
+
+</body>
+</html>
