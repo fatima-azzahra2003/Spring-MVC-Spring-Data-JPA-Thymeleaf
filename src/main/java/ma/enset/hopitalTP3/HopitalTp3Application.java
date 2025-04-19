@@ -5,6 +5,9 @@ import ma.enset.hopitalTP3.repository.PatientRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Date;
 
@@ -24,9 +27,12 @@ public class HopitalTp3Application implements CommandLineRunner {
 		patientRepository.save(new Patient(null,"John", "Doe", new Date(), false, 10));
 		patientRepository.save(new Patient(null,"lara", "Doe", new Date(), true, 5));
 
+	};
+
+	@Bean
+	PasswordEncoder passwordEncoder() {
+		return new BCryptPasswordEncoder();
+}
 
 
-
-
-	}
 }
