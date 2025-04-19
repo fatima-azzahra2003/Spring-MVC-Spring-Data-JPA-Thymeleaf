@@ -1,5 +1,6 @@
 package ma.enset.hopitalTP3.security;
 
+import ma.enset.hopitalTP3.security.service.UserDetailServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,6 +26,7 @@ import static org.springframework.security.config.Customizer.withDefaults;
 public class SecurityConfig {
     @Autowired
     private PasswordEncoder passwordEncoder;
+    private UserDetailServiceImpl userDetailService;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -34,16 +36,12 @@ public class SecurityConfig {
         http.rememberMe();
         http.authorizeHttpRequests().anyRequest().authenticated();
         http.exceptionHandling().accessDeniedPage("/notAuthorized");
+        http.userDetailsService(userDetailService);
         return http.build();
     }
-    @Bean
-    public JdbcUserDetailsManager JdbcUserDetailsManager(DataSource dataSource) {
-        return new jdbcUserDetailsManager(dataSource);
-    }
-    //@Bean
-public InMemoryUserDetailsManager InMemoryUserDetailsManager() {}
 
-    public UserDetailsService users() {
+    //@Bean
+public InMemoryUserDetailsManager InMemoryUserDetailsManager() {
         return new InMemoryUserDetailsManager(
                 User.withUsername("user")
                         .password(passwordEncoder.encode("1234"))
@@ -54,6 +52,10 @@ public InMemoryUserDetailsManager InMemoryUserDetailsManager() {}
                         .roles("USER", "ADMIN")
                         .build()
         );
+    }
+    @Bean
+    public JdbcUserDetailsManager JdbcUserDetailsManager(DataSource dataSource) {
+        return new jdbcUserDetailsManager(dataSource);
     }
 
 }

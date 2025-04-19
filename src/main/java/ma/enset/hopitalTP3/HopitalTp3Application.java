@@ -2,6 +2,7 @@ package ma.enset.hopitalTP3;
 
 import ma.enset.hopitalTP3.entities.Patient;
 import ma.enset.hopitalTP3.repository.PatientRepository;
+import ma.enset.hopitalTP3.security.service.AccountService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -15,7 +16,12 @@ import java.util.Date;
 @SpringBootApplication
 public class HopitalTp3Application implements CommandLineRunner {
 
+	private final AccountService accountService;
 	private PatientRepository patientRepository;
+
+	public HopitalTp3Application(AccountService accountService) {
+		this.accountService = accountService;
+	}
 
 	public static void main(String[] args) {
 
@@ -31,7 +37,9 @@ public class HopitalTp3Application implements CommandLineRunner {
 	}
 	@Bean
 	CommandLineRunner commandLineRunner(JdbcUserDetailsManager userDetailsManager) {
+		PasswordEncoder passwordEncoder = PasswordEncoder();
 		return args -> {
+
 			userDetailsManager.createUser(
 					org.springframework.security.core.userdetails.User.withUsername("user")
 							.password(passwordEncoder().encode("1234"))
@@ -47,7 +55,19 @@ public class HopitalTp3Application implements CommandLineRunner {
 		};
 
 	}
+	CommandLineRunner commandLineRunnerUserDetailsManager(JdbcUserDetailsManager userDetailsManager) {
+		PasswordEncoder passwordEncoder = PasswordEncoder();
+		return args -> {
+			accountService .addNewUser("user", "1234", "1234");
+			accountService .addNewUser("admin", "1234", "1234");
+			accountService .addNewRole("USER");
+			accountService .addNewRole("ADMIN");
+			accountService .addRoleToUser("user", "USER");
+			accountService .addRoleToUser("admin", "USER");
+			accountService .addRoleToUser("admin", "ADMIN");
 
+		};
+	}
 
 	@Bean
 	PasswordEncoder passwordEncoder() {
